@@ -122,30 +122,31 @@ RETURN c, pp, newer_pp
 
 **Detection Cypher pattern:**
 ```cypher
-MATCH (a:Authorization)<-[:HAS_AUTHORIZATION]-(c:Claim {flaw_scenario: 'S-04'})
-      -[:BILLED_PROCEDURE]->(cpt:CPT_Code)
-WITH a, sum(r.units) AS total_billed_units
-     // r is the BILLED_PROCEDURE relationship; use relationship variable
-WHERE total_billed_units > a.approved_units
-RETURN a, total_billed_units, a.approved_units
+MATCH (c:Claim {flaw_scenario: 'S-04'})-[:HAS_AUTHORIZATION]->(a:Authorization)
+MATCH (c)-[r:BILLED_PROCEDURE]->(:CPT_Code)
+WITH c, a, sum(r.units) AS total_units
+WHERE total_units > a.approved_units
+MERGE (f:Finding {finding_id: 'F-' + c.claim_id + '-DR-S04'})
+ON CREATE SET
+  f.detected_at = datetime(),
+  f.severity = 'HIGH',
+  f.status = 'open',
+  f.description = 'Auth unit exhaustion: ' + toString(toInteger(total_units)) + ' units billed against '
+                + toString(toInteger(a.approved_units)) + ' approved for authorization ' + a.auth_id,
+  f.estimated_risk_amount = toFloat(c.billed_amount)
+MERGE (c)-[:HAS_FINDING]->(f)
 ```
 
-**Full pattern with relationship variable:**
-```cypher
-MATCH (a:Authorization)<-[:HAS_AUTHORIZATION]-(c:Claim {flaw_scenario: 'S-04'})
-MATCH (c)-[r:BILLED_PROCEDURE]->(cpt:CPT_Code)
-WITH a, collect(c) AS claims, sum(r.units) AS total_billed_units
-WHERE total_billed_units > a.approved_units
-RETURN a, total_billed_units, a.approved_units, size(claims) AS claim_count
-```
+> **Implementation note:** Each Claim has a 1:1 relationship with its Authorization. `sum(r.units)` aggregates all procedure line units within that single claim. The injector reduces `Authorization.approved_units` to 60–75% of what the claim billed, making the exhaustion detectable. One `Finding` is created per affected Claim (not per Authorization).
 
 **Injection spec:**
-- Select 15–20 `Authorization` nodes in PT/behavioral health/home health categories
-- For each: set `approved_units` to a value that will be exceeded when all linked claim lines are summed
-- Link 3–5 claims per auth; combined units 20–40% over the approved ceiling
+- Find claims in PT/behavioral health/home health categories that have an `HAS_AUTHORIZATION` link and billed ≥ 4 units
+- Select up to 25 such claims
+- For each: set `Authorization.approved_units` to 60–75% of the total billed units (so the claim now exceeds its own auth)
 - Tag affected Claims: `is_flawed: true`, `flaw_scenario: 'S-04'`
+- Store original `approved_units` value in inventory for `clear_all_flaws()` restoration
 
-**Expected finding count:** 15–20 authorization violations (each finding = 1 Authorization exceeded, not 1 claim)
+**Expected finding count:** 20–25 findings (one Finding per affected Claim)
 
 ---
 

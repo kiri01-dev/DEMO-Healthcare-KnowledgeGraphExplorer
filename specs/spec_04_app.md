@@ -123,8 +123,8 @@ def inject_scenario(scenario_id, driver, session_state):
 | P5-03 | Row selection → split-pane subgraph view: LEFT pane — actual claim subgraph (anomalous nodes amber, missing relationships as dashed red `MISSING` edges, Finding node visible); RIGHT pane — expected path per ontology (all nodes present, solid green edges, Finding node absent). Finding appears only in left pane | **Must** |
 | P5-04 | Finding lifecycle buttons on selected row: `Acknowledge` → `Finding.status = 'acknowledged'`; `Resolve` → `Finding.status = 'resolved'` + `Finding.resolved_at = datetime()`. Both write directly to Neo4j. Sidebar badge decrements in real time | **Must** |
 | P5-05 | Scenario narrative card (collapsible): business framing quote, what the flaw is, why standard tools miss it, how the graph detected it, which `DetectionRule` fired | **Must** |
-| P5-06 | Detection chain view: mini graph showing `Claim → HAS_FINDING → Finding → TRIGGERED_BY → DetectionRule`. Click node to expand properties | **Should** |
-| P5-07 | Scenario progress tracker: mini checklist of 6 scenarios, marks `viewed` when findings first viewed. Session-level tracking | **Should** |
+| P5-06 | Detection chain view: mini graph showing `Claim → HAS_FINDING → Finding → TRIGGERED_BY → DetectionRule`. Click node to expand properties | **Should** *(deferred — not implemented)* |
+| P5-07 | Scenario progress tracker: mini checklist of 6 scenarios, marks `viewed` when findings first viewed. Session-level tracking | **Should** *(deferred — not implemented)* |
 
 ### Split-pane visualization spec
 The split pane is the most complex UI element. Implement via two side-by-side `st.columns(2)`:

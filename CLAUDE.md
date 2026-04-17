@@ -41,11 +41,11 @@
 
 | Phase | Status | Gate |
 |-------|--------|------|
-| **Phase 1** — Data & Graph Foundation | **NOT STARTED** | Kiran approves in Neo4j Browser |
-| **Phase 2** — Streamlit Application | Not started | Kiran walks 3-scenario demo |
-| **Phase 3** — Polish & Demo Readiness | Not started | Dry run passes smoke test |
+| **Phase 1** — Data & Graph Foundation | **Implementation complete — gate pending** | Kiran approves in Neo4j Browser |
+| **Phase 2** — Streamlit Application | **Implementation complete — gate pending** | Kiran walks 3-scenario demo |
+| **Phase 3** — Polish & Demo Readiness | **In progress** (setup.py + README done; timing + should-priority features TBD) | Dry run passes smoke test |
 
-**Current step:** Begin at `plan/phase1_steps.md` → Step P1-0 (Neo4j installation)
+**Current step:** `plan/phase3_steps.md` → Step P3-1 (timing validation, all 6 scenarios)
 
 ---
 

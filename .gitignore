@@ -1,6 +1,7 @@
 .env
 data/generated/
 credentials*/
+neo4j auradb credentials*.txt
 *.html
 RUNME.md
 __pycache__/

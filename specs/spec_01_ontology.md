@@ -17,11 +17,11 @@
 | `PayerPolicy` | `policy_id`, `effective_date`, `termination_date`, `plan_type`, `version` | Benefit plan |
 | `Coverage` | `coverage_id`, `start_date`, `end_date`, `member_id` | Patient enrollment |
 | `Provider` | `provider_id`, `npi`, `name`, `specialty`, `provider_type` | Billing or rendering provider |
-| `Contract` | `contract_id`, `effective_date`, `termination_date`, `fee_schedule`, `version_num` | Provider-payer contract |
-| `Authorization` | `auth_id`, `auth_date`, `approved_units`, `expiry_date`, `auth_status` | Prior auth approval |
+| `Contract` | `contract_id`, `effective_date`, `termination_date`, `fee_schedule_id`, `version_num` | Provider-payer contract |
+| `Authorization` | `auth_id`, `auth_date`, `approved_units`, `expiry_date`, `status` | Prior auth approval |
 | `ReferralOrder` | `referral_id`, `order_date`, `referring_provider_id` | Physician referral |
 | `DetectionRule` | `rule_id`, `name`, `category`, `severity`, `risk_type`, `description`, `applies_to`, `version`, `active` | Named detection rule |
-| `Finding` | `finding_id`, `detected_at`, `severity`, `status`, `description`, `estimated_risk_amount`, `resolved_at` | Detected violation instance |
+| `Finding` | `finding_id`, `detected_at`, `severity`, `status`, `description`, `estimated_risk_amount`, `resolved_at`, `resolution_note` | Detected violation instance |
 
 ### Finding.status values
 - `open` — newly created by detection engine
@@ -132,9 +132,10 @@ CREATE INDEX finding_detected_idx   IF NOT EXISTS FOR (f:Finding) ON (f.detected
 // Contract version chain (S-03)
 (c:Claim) ... (con:Contract)-[:SUPERSEDED_BY]->(newer:Contract)
 
-// Auth unit exhaustion (S-04)
-(a:Authorization)<-[:HAS_AUTHORIZATION]-(c:Claim)-[:BILLED_PROCEDURE]->(cpt)
-SUM(units) > a.approved_units
+// Auth unit exhaustion (S-04) — per-claim, 1:1 claim-to-auth
+(c:Claim {flaw_scenario:'S-04'})-[:HAS_AUTHORIZATION]->(a:Authorization)
+(c)-[r:BILLED_PROCEDURE]->(:CPT_Code)
+WITH c, a, sum(r.units) AS total_units WHERE total_units > a.approved_units
 
 // Duplicate identity (S-05)
 (p1:Patient) & (p2:Patient) share Provider + Payer, near-matching dob + same zip

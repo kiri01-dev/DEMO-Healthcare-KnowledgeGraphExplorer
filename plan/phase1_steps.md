@@ -65,7 +65,7 @@ python -c "import neo4j, streamlit, pyvis, pandas, numpy, faker, dotenv, yaml; p
 ```
 **Pass:** prints `All imports OK`
 
-- [ ] Step P1-1 complete
+- [x] Step P1-1 complete
 
 ---
 
@@ -101,7 +101,7 @@ print('Reference data: OK')
 "
 ```
 
-- [ ] Step P1-2 complete
+- [x] Step P1-2 complete
 
 ---
 
@@ -128,7 +128,7 @@ print(f'detection_rules.yaml: {len(rules)} rules, all fields present — OK')
 "
 ```
 
-- [ ] Step P1-3 complete
+- [x] Step P1-3 complete
 
 ---
 
@@ -166,7 +166,7 @@ print('domains.py: OK')
 "
 ```
 
-- [ ] Step P1-4 complete
+- [x] Step P1-4 complete
 
 ---
 
@@ -224,7 +224,7 @@ print('generator.py output: ALL CHECKS PASSED')
 "
 ```
 
-- [ ] Step P1-5 complete
+- [x] Step P1-5 complete
 
 ---
 
@@ -252,7 +252,7 @@ driver.close()
 "
 ```
 
-- [ ] Step P1-6 complete
+- [x] Step P1-6 complete
 
 ---
 
@@ -316,7 +316,7 @@ print('loader.py: ALL CHECKS PASSED')
 "
 ```
 
-- [ ] Step P1-7 complete
+- [x] Step P1-7 complete
 
 ---
 
@@ -389,7 +389,7 @@ print('flaw_injector.py: ALL CHECKS PASSED')
 "
 ```
 
-- [ ] Step P1-8 complete
+- [x] Step P1-8 complete
 
 ---
 
@@ -471,7 +471,7 @@ driver.close()
 "
 ```
 
-- [ ] Step P1-9 complete
+- [x] Step P1-9 complete
 
 ---
 
@@ -523,7 +523,7 @@ print('findings.py: ALL CHECKS PASSED')
 "
 ```
 
-- [ ] Step P1-10 complete
+- [x] Step P1-10 complete
 
 ---
 

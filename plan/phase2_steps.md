@@ -38,7 +38,7 @@ print('styles.py: import OK')
 "
 ```
 
-- [ ] Step P2-1 complete
+- [x] Step P2-1 complete
 
 ---
 
@@ -71,7 +71,7 @@ elif panel == "Rule Library":
 streamlit run src/app/main.py
 ```
 
-- [ ] Step P2-2 complete
+- [x] Step P2-2 complete
 
 ---
 
@@ -105,7 +105,7 @@ print('build_ontology_diagram: OK')
 "
 ```
 
-- [ ] Step P2-3 complete
+- [x] Step P2-3 complete
 
 ---
 
@@ -123,7 +123,7 @@ print('build_ontology_diagram: OK')
 - Schema diagram renders with all node types visible and colored correctly
 - Instance counts update after injection (Finding count goes from 0 to N)
 
-- [ ] Step P2-4 complete
+- [x] Step P2-4 complete
 
 ---
 
@@ -160,7 +160,7 @@ def get_rule_finding_count(rule_id, driver) -> int:
 - Finding counts all show `0` on clean baseline
 - After injecting S-01 (from Panel 4), navigate back to Rule Library — DR-S01 count updates
 
-- [ ] Step P2-5 complete
+- [x] Step P2-5 complete
 
 ---
 
@@ -188,7 +188,7 @@ driver.close()
 "
 ```
 
-- [ ] Step P2-6 complete
+- [x] Step P2-6 complete
 
 ---
 
@@ -207,7 +207,7 @@ driver.close()
 - Search by Claim ID renders that claim's subgraph
 - After S-01 injection, searching an affected claim shows Finding node in red
 
-- [ ] Step P2-7 complete
+- [x] Step P2-7 complete
 
 ---
 
@@ -241,7 +241,7 @@ st.rerun()
 - Post-injection card shows claims affected, changes, findings created, business quote
 - "Clear All Flaws" resets all rows to `pending`, sidebar badge to 0
 
-- [ ] Step P2-8 complete
+- [x] Step P2-8 complete
 
 ---
 
@@ -297,7 +297,7 @@ driver.close()
 "
 ```
 
-- [ ] Step P2-9 complete
+- [x] Step P2-9 complete
 
 ---
 
@@ -333,7 +333,7 @@ with col2:
 - Click Resolve → finding resolved_at timestamp set, count decrements
 - Scenario narrative card collapses/expands correctly
 
-- [ ] Step P2-10 complete
+- [x] Step P2-10 complete
 
 ---
 

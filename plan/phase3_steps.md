@@ -140,7 +140,7 @@ python scripts/setup.py
 # Setup complete. Run: streamlit run src/app/main.py
 ```
 
-- [ ] Step P3-4 complete
+- [x] Step P3-4 complete
 
 ---
 
@@ -162,7 +162,7 @@ python scripts/setup.py
 - Beat 4: "Introducing a real problem..." — Scenario Loader, inject S-01, watch badge
 - Beat 5: "Found before a single claim was worked..." — Findings Dashboard, lifecycle demo
 
-- [ ] README.md complete
+- [x] README.md complete
 
 ---
 
