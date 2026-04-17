@@ -1,0 +1,48 @@
+code,description,category
+E11.9,Type 2 diabetes mellitus without complications,Chronic
+E11.65,Type 2 diabetes with hyperglycemia,Chronic
+I10,Essential (primary) hypertension,Chronic
+I25.10,Atherosclerotic heart disease of native artery,Chronic
+J44.1,Chronic obstructive pulmonary disease with acute exacerbation,Chronic
+J44.0,Chronic obstructive pulmonary disease with acute lower respiratory infection,Chronic
+N18.3,Chronic kidney disease stage 3 unspecified,Chronic
+N18.4,Chronic kidney disease stage 4,Chronic
+E78.5,Hyperlipidemia unspecified,Chronic
+Z96.641,Presence of right artificial hip joint,Chronic
+Z96.651,Presence of right artificial knee joint,Chronic
+F32.1,Major depressive disorder single episode moderate,Behavioral
+F32.9,Major depressive disorder single episode unspecified,Behavioral
+F41.1,Generalized anxiety disorder,Behavioral
+F43.10,Post-traumatic stress disorder unspecified,Behavioral
+F33.0,Major depressive disorder recurrent mild,Behavioral
+F90.0,Attention-deficit hyperactivity disorder predominantly inattentive,Behavioral
+J18.9,Pneumonia unspecified organism,Acute
+N39.0,Urinary tract infection site not specified,Acute
+J20.9,Acute bronchitis unspecified,Acute
+K21.0,Gastro-esophageal reflux disease with esophagitis,Acute
+R10.9,Unspecified abdominal pain,Acute
+J06.9,Acute upper respiratory infection unspecified,Acute
+A09,Other and unspecified gastroenteritis and colitis,Acute
+R51.9,Headache unspecified,Acute
+S52.501A,Unspecified fracture of the lower end of right radius initial encounter,Acute
+S72.001A,Fracture of unspecified part of neck of right femur initial encounter,Acute
+M54.5,Low back pain,Musculoskeletal
+M54.4,Lumbago with sciatica right side,Musculoskeletal
+M75.1,Rotator cuff syndrome,Musculoskeletal
+M17.11,Primary osteoarthritis right knee,Musculoskeletal
+M17.12,Primary osteoarthritis left knee,Musculoskeletal
+M25.511,Pain in right shoulder,Musculoskeletal
+M25.512,Pain in left shoulder,Musculoskeletal
+M47.816,Spondylosis without myelopathy or radiculopathy lumbar region,Musculoskeletal
+M54.2,Cervicalgia,Musculoskeletal
+M79.3,Panniculitis unspecified,Musculoskeletal
+G43.909,Migraine unspecified not intractable,Neurological
+G89.29,Other chronic pain,Neurological
+G35,Multiple sclerosis,Neurological
+Z00.00,Encounter for general adult medical examination,Preventive
+Z00.01,Encounter for general adult medical examination with abnormal findings,Preventive
+Z12.11,Encounter for screening for malignant neoplasm of colon,Preventive
+Z23,Encounter for immunization,Preventive
+I63.9,Cerebral infarction unspecified,Acute
+I21.9,Acute myocardial infarction unspecified,Acute
+K92.1,Melena,Acute

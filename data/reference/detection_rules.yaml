@@ -1,0 +1,185 @@
+rules:
+  - rule_id: "DR-S01"
+    name: "Unverifiable Prior Authorization Chain"
+    category: "prior_authorization"
+    severity: "HIGH"
+    risk_type: "denial"
+    description: "Claim billed for an auth-required procedure where the authorization is missing, covers a different procedure, or has expired. The auth number field may be populated, but the cross-system link cannot be validated."
+    applies_to: "Claim"
+    version: "1.0"
+    active: true
+    cypher: |
+      MATCH (c:Claim {flaw_scenario: 'S-01'})
+      MATCH (c)-[:BILLED_PROCEDURE]->(cpt:CPT_Code {requires_auth: true})
+      OPTIONAL MATCH (c)-[:HAS_AUTHORIZATION]->(a:Authorization)
+      OPTIONAL MATCH (a)-[:AUTH_FOR_PROCEDURE]->(auth_cpt:CPT_Code)
+      WITH c, cpt, a, auth_cpt,
+           CASE
+             WHEN a IS NULL
+               THEN 'TYPE_A: No HAS_AUTHORIZATION link — auth number in claim header has no matching Authorization node in graph'
+             WHEN auth_cpt IS NULL OR auth_cpt.code <> cpt.code
+               THEN 'TYPE_B: Auth ' + coalesce(a.auth_id,'?') + ' covers CPT ' + coalesce(auth_cpt.code,'none') + ' but claim billed CPT ' + cpt.code + ' (procedure mismatch)'
+             WHEN a.expiry_date < c.claim_date
+               THEN 'TYPE_C: Auth ' + a.auth_id + ' expired ' + a.expiry_date + ' — service date ' + c.claim_date + ' is ' + toString(duration.inDays(date(a.expiry_date), date(c.claim_date)).days) + ' days past expiry'
+             ELSE null
+           END AS flaw_detail
+      WHERE flaw_detail IS NOT NULL
+      WITH DISTINCT c, cpt, flaw_detail
+      MERGE (f:Finding {finding_id: 'F-' + c.claim_id + '-DR-S01'})
+      ON CREATE SET
+        f.detected_at = datetime(),
+        f.severity = 'HIGH',
+        f.status = 'open',
+        f.description = flaw_detail,
+        f.flaw_type = left(flaw_detail, 6),
+        f.estimated_risk_amount = toFloat(c.billed_amount)
+      MERGE (c)-[:HAS_FINDING]->(f)
+      WITH f
+      MATCH (r:DetectionRule {rule_id: 'DR-S01'})
+      MERGE (f)-[:TRIGGERED_BY]->(r)
+      RETURN count(DISTINCT f) AS findings_created
+
+  - rule_id: "DR-S02"
+    name: "Rendering Provider Not Credentialed with Billed Payer"
+    category: "credentialing"
+    severity: "HIGH"
+    risk_type: "denial"
+    description: "The rendering provider on the claim (the physician who performed the service) has no active contract with the payer the claim was submitted to. The billing NPI may be contracted, but the rendering NPI is not."
+    applies_to: "Claim"
+    version: "1.0"
+    active: true
+    cypher: |
+      MATCH (c:Claim {flaw_scenario: 'S-02'})
+      MATCH (c)-[:BILLED_BY {billing_role: 'rendering'}]->(rp:Provider)
+      MATCH (c)-[:SUBMITTED_TO]->(py:Payer)
+      OPTIONAL MATCH (rp)-[:CONTRACTED_WITH]->(con:Contract)-[:CONTRACT_WITH_PAYER]->(py)
+      WHERE con.effective_date <= c.claim_date
+        AND (con.termination_date IS NULL OR con.termination_date >= c.claim_date)
+      WITH c, rp, py, count(con) AS contract_count
+      WHERE contract_count = 0
+      MERGE (f:Finding {finding_id: 'F-' + c.claim_id + '-DR-S02'})
+      ON CREATE SET
+        f.detected_at = datetime(),
+        f.severity = 'HIGH',
+        f.status = 'open',
+        f.description = 'Rendering provider ' + rp.npi + ' has no active contract with payer ' + py.payer_name + ' for claim ' + c.claim_id,
+        f.estimated_risk_amount = toFloat(c.billed_amount)
+      MERGE (c)-[:HAS_FINDING]->(f)
+      WITH f
+      MATCH (r:DetectionRule {rule_id: 'DR-S02'})
+      MERGE (f)-[:TRIGGERED_BY]->(r)
+      RETURN count(DISTINCT f) AS findings_created
+
+  - rule_id: "DR-S03"
+    name: "Claim Resolved Against Superseded Contract Version"
+    category: "contract"
+    severity: "MEDIUM"
+    risk_type: "underpayment"
+    description: "The claim is being billed against a contract version that has been superseded by a newer renewal. Both versions exist in the source system but the claim references the old fee schedule, resulting in potential underpayment."
+    applies_to: "Claim"
+    version: "1.0"
+    active: true
+    cypher: |
+      MATCH (c:Claim {flaw_scenario: 'S-03'})
+      MATCH (c)-[:BILLED_BY]->(p:Provider)-[:CONTRACTED_WITH]->(con:Contract)-[:SUPERSEDED_BY]->(newer:Contract)
+      WITH DISTINCT c, con, newer
+      MERGE (f:Finding {finding_id: 'F-' + c.claim_id + '-DR-S03'})
+      ON CREATE SET
+        f.detected_at = datetime(),
+        f.severity = 'MEDIUM',
+        f.status = 'open',
+        f.description = 'Claim ' + c.claim_id + ' resolves against superseded contract ' + con.contract_id + '; current version is ' + newer.contract_id,
+        f.estimated_risk_amount = toFloat(c.billed_amount) * 0.08
+      MERGE (c)-[:HAS_FINDING]->(f)
+      WITH f
+      MATCH (r:DetectionRule {rule_id: 'DR-S03'})
+      MERGE (f)-[:TRIGGERED_BY]->(r)
+      RETURN count(DISTINCT f) AS findings_created
+
+  - rule_id: "DR-S04"
+    name: "Authorization Unit Exhaustion Across Claims"
+    category: "authorization_units"
+    severity: "HIGH"
+    risk_type: "denial"
+    description: "The total units billed across all claims linked to a single prior authorization exceed the approved unit limit. Each individual claim passes validation, but the aggregate exceeds what the payer authorized."
+    applies_to: "Claim"
+    version: "1.0"
+    active: true
+    cypher: |
+      MATCH (c:Claim {flaw_scenario: 'S-04'})-[:HAS_AUTHORIZATION]->(a:Authorization)
+      MATCH (c)-[r:BILLED_PROCEDURE]->(:CPT_Code)
+      WITH c, a, sum(r.units) AS total_units
+      WHERE total_units > a.approved_units
+      MERGE (f:Finding {finding_id: 'F-' + c.claim_id + '-DR-S04'})
+      ON CREATE SET
+        f.detected_at = datetime(),
+        f.severity = 'HIGH',
+        f.status = 'open',
+        f.description = 'Auth unit exhaustion: ' + toString(toInteger(total_units)) + ' units billed against ' + toString(toInteger(a.approved_units)) + ' approved for authorization ' + a.auth_id,
+        f.estimated_risk_amount = toFloat(c.billed_amount)
+      MERGE (c)-[:HAS_FINDING]->(f)
+      WITH f
+      MATCH (r:DetectionRule {rule_id: 'DR-S04'})
+      MERGE (f)-[:TRIGGERED_BY]->(r)
+      RETURN count(DISTINCT f) AS findings_created
+
+  - rule_id: "DR-S05"
+    name: "Duplicate Patient Identity Across Source Systems"
+    category: "entity_integrity"
+    severity: "HIGH"
+    risk_type: "entity_integrity"
+    description: "Two patient records share the same zip code, near-matching date of birth (within 5 days), and overlap in their payer and provider networks. This pattern indicates the same patient registered under two different MRNs across source systems."
+    applies_to: "Claim"
+    version: "1.0"
+    active: true
+    cypher: |
+      MATCH (p_dup:Patient {flaw_scenario: 'S-05'})
+      MATCH (p_orig:Patient {patient_id: p_dup.duplicate_of})
+      MATCH (p_dup)-[:HAD_VISIT]->()-[:GENERATED_CLAIM]->(c:Claim {flaw_scenario: 'S-05'})
+      WITH p_dup, p_orig, c ORDER BY c.claim_id
+      WITH p_dup, p_orig, collect(c)[0] AS anchor_claim
+      MERGE (f:Finding {finding_id: 'F-DUP-' + p_dup.patient_id})
+      ON CREATE SET
+        f.detected_at = datetime(),
+        f.severity = 'HIGH',
+        f.status = 'open',
+        f.description = 'Probable duplicate patients: ' + p_dup.patient_id + ' appears to duplicate ' + p_orig.patient_id + ' (name variation, matching DOB/zip/network)',
+        f.estimated_risk_amount = 0.0
+      MERGE (anchor_claim)-[:HAS_FINDING]->(f)
+      WITH f
+      MATCH (r:DetectionRule {rule_id: 'DR-S05'})
+      MERGE (f)-[:TRIGGERED_BY]->(r)
+      RETURN count(DISTINCT f) AS findings_created
+
+  - rule_id: "DR-S06"
+    name: "Invalid HMO Referral Chain"
+    category: "referral"
+    severity: "HIGH"
+    risk_type: "denial"
+    description: "HMO specialist claim where one or more referral chain conditions fail: referral missing, referral dated after visit, or referring provider is not a PCP contracted with the same HMO. All four conditions must be valid simultaneously."
+    applies_to: "Claim"
+    version: "1.0"
+    active: true
+    cypher: |
+      MATCH (c:Claim {flaw_scenario: 'S-06'})
+      MATCH (c)-[:COVERED_UNDER]->(cov:Coverage)-[:COVERED_BY]->(pp:PayerPolicy {plan_type: 'HMO'})
+      MATCH (v:Visit)-[:GENERATED_CLAIM]->(c)
+      OPTIONAL MATCH (c)-[:HAS_REFERRAL]->(ro:ReferralOrder)
+      OPTIONAL MATCH (ro)-[:REFERRED_BY]->(ref_prov:Provider)
+      WITH c, v, ro, ref_prov
+      WHERE ro IS NULL
+         OR ro.order_date > v.visit_date
+         OR (ref_prov IS NOT NULL AND ref_prov.specialty <> 'PCP')
+      WITH DISTINCT c
+      MERGE (f:Finding {finding_id: 'F-' + c.claim_id + '-DR-S06'})
+      ON CREATE SET
+        f.detected_at = datetime(),
+        f.severity = 'HIGH',
+        f.status = 'open',
+        f.description = 'Invalid HMO referral chain for claim ' + c.claim_id + ': referral missing, post-dated, or referring provider not a contracted PCP',
+        f.estimated_risk_amount = toFloat(c.billed_amount)
+      MERGE (c)-[:HAS_FINDING]->(f)
+      WITH f
+      MATCH (r:DetectionRule {rule_id: 'DR-S06'})
+      MERGE (f)-[:TRIGGERED_BY]->(r)
+      RETURN count(DISTINCT f) AS findings_created

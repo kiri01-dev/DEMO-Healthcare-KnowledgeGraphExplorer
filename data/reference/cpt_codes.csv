@@ -1,0 +1,62 @@
+code,description,category,requires_auth
+99202,Office visit new patient low complexity,E&M,False
+99203,Office visit new patient moderate complexity,E&M,False
+99204,Office visit new patient mod-high complexity,E&M,False
+99205,Office visit new patient high complexity,E&M,False
+99211,Office visit established minimal,E&M,False
+99212,Office visit established low complexity,E&M,False
+99213,Office visit established moderate complexity,E&M,False
+99214,Office visit established mod-high complexity,E&M,False
+99215,Office visit established high complexity,E&M,False
+99221,Hospital inpatient admit low complexity,E&M,False
+99222,Hospital inpatient admit moderate complexity,E&M,False
+99223,Hospital inpatient admit high complexity,E&M,False
+99231,Hospital inpatient subsequent low,E&M,False
+99232,Hospital inpatient subsequent moderate,E&M,False
+99233,Hospital inpatient subsequent high,E&M,False
+99281,Emergency department low severity,E&M,False
+99283,Emergency department moderate severity,E&M,False
+99285,Emergency department high severity,E&M,False
+99242,Office consultation low complexity,E&M,False
+99244,Office consultation moderate complexity,E&M,False
+80053,Comprehensive metabolic panel,Lab,False
+93000,Electrocardiogram with interpretation,Cardiology,False
+36415,Collection venous blood by venipuncture,Lab,False
+71046,Chest X-ray 2 views,Imaging,False
+73562,X-ray knee 3 views,Imaging,False
+72100,X-ray spine lumbar 2 views,Imaging,False
+70553,MRI brain with contrast,Imaging,True
+71552,MRI chest without contrast,Imaging,True
+72148,MRI lumbar spine without contrast,Imaging,True
+73223,MRI shoulder with contrast,Imaging,True
+70553,MRI brain with and without contrast,Imaging,True
+70470,CT head without and with contrast,Imaging,True
+71270,CT thorax with contrast,Imaging,True
+72131,CT lumbar spine without contrast,Imaging,True
+74177,CT abdomen and pelvis with contrast,Imaging,True
+27447,Total knee arthroplasty,Surgery,True
+29827,Arthroscopy shoulder rotator cuff repair,Surgery,True
+43239,EGD with biopsy,Surgery,True
+47562,Laparoscopic cholecystectomy,Surgery,True
+27130,Total hip arthroplasty,Surgery,True
+29880,Arthroscopy knee meniscectomy,Surgery,True
+66984,Cataract surgery with IOL,Surgery,True
+97110,Therapeutic exercises,PT,True
+97530,Therapeutic activities,PT,True
+97140,Manual therapy techniques,PT,True
+97150,Therapeutic exercises group,PT,True
+97012,Mechanical traction therapy,PT,True
+97035,Ultrasound therapy,PT,True
+97032,Electrical stimulation therapy,PT,True
+97016,Vasopneumatic device therapy,PT,True
+97010,Hot or cold pack therapy,PT,True
+90837,Psychotherapy 60 minutes,Behavioral Health,True
+90847,Family psychotherapy with patient,Behavioral Health,True
+90853,Group psychotherapy,Behavioral Health,True
+90832,Psychotherapy 30 minutes,Behavioral Health,True
+96132,Neuropsychological testing evaluation,Behavioral Health,True
+90785,Interactive complexity add-on,Behavioral Health,True
+G0299,Direct skilled nursing service in home health,Home Health,True
+G0300,Direct skilled physical therapy in home health,Home Health,True
+G0151,Services of physical therapist in home health,Home Health,True
+G0154,Direct skilled nursing service in home health per diem,Home Health,True

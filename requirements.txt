@@ -1,0 +1,8 @@
+neo4j>=5.0,<6.0
+streamlit>=1.35
+pyvis>=0.3
+pandas>=2.0
+numpy>=1.26
+faker>=24.0
+python-dotenv>=1.0
+pyyaml>=6.0
