@@ -1,5 +1,8 @@
 .env
 data/generated/
+credentials*/
+*.html
+RUNME.md
 __pycache__/
 *.pyc
 *.pyo
